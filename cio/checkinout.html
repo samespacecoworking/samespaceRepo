@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samespace Check In/Out</title>
+    <link rel="stylesheet" href="checkinout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <button id="start-again-btn">
+        <i class="fas fa-home"></i>
+        Home
+    </button>
+    <div id="app">
+
+        <div id="start-screen" class="screen active">
+            <div class="button-container">
+                <button id="member-check-in-btn" class="action-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Check In
+                </button>
+<!--
+                <button id="visitor-check-in-btn" class="action-btn">
+                    <i class="fas fa-user-plus"></i>
+                    Visitor Check In
+                </button>
+-->
+		<button id="check-out-btn" class="action-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Check Out
+                </button>
+            </div>
+        </div>
+        
+	<div id="member-pin-screen" class="screen hidden">
+	    <h2>Enter Member PIN</h2>
+	    <div id="pin-input-container">
+		<input type="text" id="pin-1" maxlength="1" class="pin-input">
+		<input type="text" id="pin-2" maxlength="1" class="pin-input">
+		<input type="text" id="pin-3" maxlength="1" class="pin-input">
+		<input type="text" id="pin-4" maxlength="1" class="pin-input">
+		<input type="text" id="pin-5" maxlength="1" class="pin-input">
+		<input type="text" id="pin-6" maxlength="1" class="pin-input">
+	    </div>
+	</div>
+
+        <div id="check-in-screen" class="screen hidden">
+            <h2>Who is checking in?</h2>
+            <div id="name-search-container">
+                <input type="text" id="name-search" placeholder="Type your name...">
+                <button id="clear-search" class="hidden">✖</button>
+            </div>
+            <div id="name-suggestions" class="flex-container"></div>
+        </div>
+
+        <div id="confirm-screen" class="screen hidden">
+            <button id="confirm-action-btn" class="action-btn">
+		Confirm
+	    </button>
+            <button id="cancel-btn" class="action-btn">
+                <i class="fas fa-times"></i>
+		Cancel
+	    </button>
+        </div>
+
+        <div id="check-out-screen" class="screen hidden">
+            <h2>Who is checking out?</h2>
+            <div id="checked-in-list" class="flex-container"></div>
+        </div>
+    </div>
+    <script src="checkinout.js"></script>
+</body>
+</html>

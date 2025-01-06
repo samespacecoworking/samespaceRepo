@@ -11,22 +11,30 @@ class NexudusSession {
 	private $apiPassword;
 	private $apiBase = 'https://spaces.nexudus.com/api/';
 
-	public function __construct($businessId, $countryId, $simpleTimeZoneId) {
+	public function __construct($businessId, $countryId, $simpleTimeZoneId, $debug = false) {
 		$this->apiUsername = getenv('NEXUDUS_USERNAME');
 		$this->apiPassword = getenv('NEXUDUS_PASSWORD');
 		$this->businessId = $businessId;
 		$this->countryId = $countryId;
 		$this->simpleTimeZoneId = $simpleTimeZoneId;
+		$this->debug = $debug;
 	}
 
 	private function request($endpoint, $method = 'GET', $data = null) {
 		// Generic API request method
 		$url = $this->apiBase . $endpoint;
+		$debug = $this->debug;
+
 		$headers = ['Authorization: Basic ' . base64_encode($this->apiUsername . ':' . $this->apiPassword)];
 		$body = json_encode($data);
 		
 		// Initialize and configure CURL request here...
 		$pch = curl_init();
+		if ($debug === true) {
+			curl_setopt($pch, CURLOPT_VERBOSE, true); 
+			$verboseLog = fopen('php://temp', 'w+');
+			curl_setopt($pch, CURLOPT_STDERR, $verboseLog);
+		}
 		curl_setopt($pch, CURLOPT_URL, $url);
 		curl_setopt($pch, CURLOPT_CUSTOMREQUEST, $method);
 		if ($data) {
@@ -37,6 +45,15 @@ class NexudusSession {
 		curl_setopt($pch, CURLOPT_HTTPHEADER, $headers);
 		curl_setopt($pch, CURLOPT_RETURNTRANSFER, true);
 		$response = curl_exec($pch);
+
+		if ($debug === true) {
+			// Log cURL verbose output
+			rewind($verboseLog);
+			$verboseOutput = stream_get_contents($verboseLog);
+			fclose($verboseLog);
+			error_log("cURL verbose output:\n" . $verboseOutput);
+		}
+
 		if ($response === false) {
 			echo 'cURL error: ' . curl_error($pch);
 		}
@@ -71,8 +88,11 @@ class NexudusSession {
 	}
 
 	public function runCommandOnDeliveries($arrayOfDeliveryIds, $command) {
-		$payload = '{"Key":"' . $command . '","Ids":' . $arrayOfDeliveryIds . '}';
-		return $this->request('spaces/coworkerdeliveries/runcommand', 'POST', $payload);
+		$data = [
+			'Ids' => $arrayOfDeliveryIds,
+			'Key' => "$command",
+		];
+		return $this->request('spaces/coworkerdeliveries/runcommand', 'POST', $data);
 	}
 
 	// Create a new customer

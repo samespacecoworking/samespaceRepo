@@ -34,17 +34,13 @@ $fullname = $coworkerRecord['FullName'];
 $deliveryList = $nexudusSession->fetchDeliveries($coworkerId);
 
 // Construct array of Ids for items in Delivery array
-$arrayOfDeliveryIds = '[';
+$arrayOfDeliveryIds = [];
 foreach ($deliveryList as $delivery) {
-	if ($arrayOfDeliveryIds != '[') {
-		$arrayOfDeliveryIds .= ',';
-	}
-	$arrayOfDeliveryIds .= $delivery["Id"];
+	$arrayOfDeliveryIds[] = $delivery["Id"];
 }
-$arrayOfDeliveryIds .= ']';
+
 // Mark all deliveries in the array as collected
 $response = $nexudusSession->runCommandOnDeliveries($arrayOfDeliveryIds, "DELIVERY_COLLECT");
-
 fwrite ($fp, date('Y-m-d\TH:i:s') . ' Marked following deliveries as collected: ' . $arrayOfDeliveryIds . PHP_EOL);
 
 fclose ($fp);

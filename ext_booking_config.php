@@ -13,11 +13,6 @@ $unifi_version  = '2.3.15'; // the version of the Controller software, eg. '4.6.
 $unifi_site_id  = 'default';
 $unifi_group_id = "51fd8fa6-2521-4960-8b65-817bd28121d3";
 
-// Nexudus credentials
-$nexudus_api_url = 'https://spaces.nexudus.com/api/spaces';
-$nexudus_user = getenv('NEXUDUS_USER');
-$nexudus_password = getenv('NEXUDUS_PASSWORD');
-
 // Business ID for Samespace
 $nexudusBusinessId = '1414914964';
 $countryId = 1220;

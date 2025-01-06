@@ -6,7 +6,7 @@ $fp = fopen("doorcheckin.log", 'a');
 
 // Nexudus API credentials
 $api_url = 'https://spaces.nexudus.com/api/spaces';
-$nexudusUsername = getenv("NEXUDUS_USER");
+$nexudusUsername = getenv("NEXUDUS_USERNAME");
 $nexudusPassword = getenv("NEXUDUS_PASSWORD");
 $nexudus_userpwd = $nexudusUsername . ':' . $nexudusPassword;
 $business_id = '1414914964';

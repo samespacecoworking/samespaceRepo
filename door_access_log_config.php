@@ -22,7 +22,7 @@ $site_id             = 'default';
 $group_ids           = [ "51fd8fa6-2521-4960-8b65-817bd28121d3" ];
 
 // Nexudus credentials
-$nexudus_username = getenv('NEXUDUS_USER');
+$nexudus_username = getenv('NEXUDUS_USERNAME');
 $nexudus_password = getenv('NEXUDUS_PASSWORD');
 
 /**

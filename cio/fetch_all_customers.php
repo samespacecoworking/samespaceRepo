@@ -3,7 +3,7 @@ header('Content-Type: application/json');
 
 // Nexudus API credentials
 $api_url = 'https://spaces.nexudus.com/api/spaces';
-$nexudus_username = getenv('NEXUDUS_USER');
+$nexudus_username = getenv('NEXUDUS_USERNAME');
 $nexudus_password = getenv('NEXUDUS_PASSWORD');
 
 // Function to make API requests

@@ -1,9 +1,11 @@
 <?php
 
-// Nexudus credentials
-$nexudus_username = getenv('NEXUDUS_USERNAME');
-$nexudus_password = getenv('NEXUDUS_PASSWORD');
+/**
+ * Configuration for send_invoices_to_xero.php (run from cron)
+ */
 
 // Business ID for Samespace
-$business_id = '1414914964';
+$nexudusBusinessId = '1414914964';
+$countryId = 1220;
+$simpleTimeZoneId = 2023;
 

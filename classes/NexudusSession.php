@@ -95,6 +95,18 @@ class NexudusSession {
 		return $this->request('spaces/coworkerdeliveries/runcommand', 'POST', $data);
 	}
 
+	public function fetchPaidInvoices($startDateTime) {
+		return $this->request('billing/coworkerinvoices?size=1000&CoworkerInvoice_CreditNote=false&CoworkerInvoice_Paid=true&CoworkerInvoice_Refunded=false&from_CoworkerInvoice_PaidOn=' . $startDateTime)["Records"];
+	}
+
+	public function runCommandOnInvoices($arrayOfInvoiceIds, $command) {
+		$data = [
+			'Ids' => $arrayOfInvoiceIds,
+			'Key' => "$command",
+		];
+		return $this->request('billing/coworkerinvoices/runcommand', 'POST', $data);
+	}
+
 	// Create a new customer
 	public function createCustomer($fullname, $email, $billing_email = null, $termsAccepted = false) {
 		$data = [

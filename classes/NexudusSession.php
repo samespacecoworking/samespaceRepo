@@ -66,6 +66,15 @@ class NexudusSession {
 		return $this->request('spaces/coworkers/' . $coworkerId);
 	}
 
+	public function fetchDeliveries($coworkerId) {
+		return $this->request('spaces/coworkerdeliveries?size=1000&CoworkerDelivery_Collected=false&CoworkerDelivery_Coworker=' . $coworkerId)["Records"];
+	}
+
+	public function runCommandOnDeliveries($arrayOfDeliveryIds, $command) {
+		$payload = '{"Key":"' . $command . '","Ids":' . $arrayOfDeliveryIds . '}';
+		return $this->request('spaces/coworkerdeliveries/runcommand', 'POST', $payload);
+	}
+
 	// Create a new customer
 	public function createCustomer($fullname, $email, $billing_email = null, $termsAccepted = false) {
 		$data = [

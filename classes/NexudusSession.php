@@ -1,11 +1,5 @@
 <?php
 
-use DateTime;
-use DateTimeZone;
-use DateInterval;
-use DatePeriod;
-use Exception;
-
 class NexudusSession {
 	private $apiUsername;
 	private $apiPassword;

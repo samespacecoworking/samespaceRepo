@@ -41,7 +41,7 @@ foreach ($deliveryList as $delivery) {
 
 // Mark all deliveries in the array as collected
 $response = $nexudusSession->runCommandOnDeliveries($arrayOfDeliveryIds, "DELIVERY_COLLECT");
-fwrite ($fp, date('Y-m-d\TH:i:s') . ' Marked following deliveries as collected: ' . $arrayOfDeliveryIds . PHP_EOL);
+fwrite ($fp, date('Y-m-d\TH:i:s') . ' Marked following deliveries as collected: ' . implode(', ',$arrayOfDeliveryIds) . PHP_EOL);
 
 fclose ($fp);
 

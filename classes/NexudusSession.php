@@ -118,8 +118,7 @@ class NexudusSession {
 	// Update a customer's billing date
 	public function updateBillingDate($id, $billingDate) {
 		// Get coworker record
-		$coworker = $this->request("coworkers/{$id}");
-
+		$coworker = $this->request("spaces/coworkers/{$id}");
 		// Update NextAutoInvoice (billing date) field in customer record
 		$coworker['NextAutoInvoice'] = $billingDate;
 		return $this->request('spaces/coworkers','PUT',$coworker);

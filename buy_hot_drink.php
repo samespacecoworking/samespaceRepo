@@ -39,7 +39,7 @@ $billing_day = $coworker_record['BillingDay'];
 // Add product 
 
 $productSold = $nexudus_session->addCoworkerProduct($coworkerId, $productId, 1, true, false);
-fwrite ($fp, date('Y-m-d\TH:i:s') . ' Sold product ' . $productId . ' (' . $productSold["Value"]["ProducName"] . ') to Coworker ' . $fullname . ' (' . $coworkerId . ')' . PHP_EOL);
+fwrite ($fp, date('Y-m-d\TH:i:s') . ' Sold product ' . $productId . ' (' . $productSold["Value"]["ProductName"] . ') to Coworker ' . $fullname . ' (' . $coworkerId . ')' . PHP_EOL);
 
 // If the coworker is a contact (not a member), schedule the invoice for that evening
 if (is_null($billing_day)) { 

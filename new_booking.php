@@ -21,8 +21,21 @@ if (is_file('new_booking_config.php') && is_readable('new_booking_config.php')) 
 }
 
 // get raw content from request
+
 $request_body = file_get_contents("php://input");
 $webhookRecord = json_decode($request_body, true)[0];
+
+// Immediately acknowledge the webhook so Nexudus doesn't retry
+http_response_code(200);
+header('Content-Type: text/plain');
+header('Connection: close');
+echo 'OK';
+ob_flush();
+flush();
+if (function_exists('fastcgi_finish_request')) {
+    fastcgi_finish_request();
+}
+ignore_user_abort(true);
 
 $fp = fopen("./new_booking.log", 'a');
 

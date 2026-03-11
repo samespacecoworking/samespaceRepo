@@ -68,8 +68,10 @@ class StripeSession {
     public static function verifyWebhookSignature($payload, $sigHeader, $secret) {
         $elements = [];
         foreach (explode(',', $sigHeader) as $part) {
-            [$key, $value] = explode('=', trim($part), 2);
-            $elements[$key] = $value;
+            $pair = explode('=', trim($part), 2);
+            if (count($pair) === 2) {
+                $elements[$pair[0]] = $pair[1];
+            }
         }
 
         $timestamp = $elements['t'] ?? '';

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmed - Samespace</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <a href="https://samespace.work" class="logo">
+            <img src="/Samespace-Logo-RGB-DarkGreen.png" alt="Samespace">
+        </a>
+    </header>
+
+    <main>
+        <section id="screen-confirming" class="screen active">
+            <div class="processing">
+                <div class="spinner"></div>
+                <p>Confirming your booking...</p>
+            </div>
+        </section>
+
+        <section id="screen-confirmed" class="screen">
+            <div class="confirmation">
+                <div class="confirm-icon">&#10003;</div>
+                <h1>Booking confirmed!</h1>
+                <div id="confirm-details" class="confirm-details"></div>
+                <div id="pin-section" class="pin-section hidden">
+                    <h2>Your door access PIN</h2>
+                    <div id="pin-display" class="pin-display"></div>
+                    <p class="pin-note">You'll also receive this by email. Use this PIN at the door entry keypad.</p>
+                </div>
+                <div class="confirm-actions">
+                    <a href="" id="portal-link" class="btn-primary">Manage your account</a>
+                    <a href="https://samespace.work" class="btn-secondary">Back to samespace.work</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="screen-error" class="screen">
+            <div class="confirmation">
+                <div class="confirm-icon error-icon">!</div>
+                <h1>Something went wrong</h1>
+                <p id="error-message">We couldn't confirm your booking. Please contact us.</p>
+                <a href="mailto:info@samespace.work" class="btn-primary">Contact us</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Samespace Coworking &middot; 4 Hencotes, Hexham NE46 2EJ &middot; <a href="https://samespace.work">samespace.work</a></p>
+    </footer>
+
+    <script>
+        (function() {
+            const params = new URLSearchParams(window.location.search);
+            const intentId = params.get('intent');
+
+            if (!intentId) {
+                showError('No booking reference found.');
+                return;
+            }
+
+            pollStatus(intentId, 0);
+
+            function pollStatus(id, attempts) {
+                if (attempts > 30) {
+                    showError('Booking is taking longer than expected. Please check your email or contact us.');
+                    return;
+                }
+
+                fetch('/api/status.php?intent=' + encodeURIComponent(id))
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.status === 'completed') {
+                            showConfirmation(data);
+                        } else if (data.status === 'failed') {
+                            showError('Booking provisioning failed. Please contact us.');
+                        } else {
+                            setTimeout(() => pollStatus(id, attempts + 1), 2000);
+                        }
+                    })
+                    .catch(() => {
+                        setTimeout(() => pollStatus(id, attempts + 1), 2000);
+                    });
+            }
+
+            function showConfirmation(data) {
+                document.getElementById('screen-confirming').classList.remove('active');
+                document.getElementById('screen-confirmed').classList.add('active');
+
+                let details = '';
+                if (data.type === 'desk') {
+                    const dates = (data.dates || []).map(d => formatDate(d)).join(', ');
+                    details = '<p><strong>Day pass booking</strong></p><p>' + dates + '</p>';
+                } else {
+                    details = '<p><strong>Room booking</strong></p>'
+                        + '<p>' + formatDate(data.date) + ', '
+                        + pad(data.startHour) + ':00 &ndash; ' + pad(data.endHour) + ':00</p>';
+                }
+                document.getElementById('confirm-details').innerHTML = details;
+
+                if (data.pin) {
+                    document.getElementById('pin-section').classList.remove('hidden');
+                    document.getElementById('pin-display').textContent = data.pin;
+                }
+
+                if (data.portalUrl) {
+                    document.getElementById('portal-link').href = data.portalUrl;
+                }
+            }
+
+            function showError(msg) {
+                document.getElementById('screen-confirming').classList.remove('active');
+                document.getElementById('screen-error').classList.add('active');
+                document.getElementById('error-message').textContent = msg;
+            }
+
+            function formatDate(str) {
+                const d = new Date(str + 'T12:00:00');
+                return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+            }
+
+            function pad(n) { return String(n).padStart(2, '0'); }
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book - Samespace Coworking</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <a href="https://samespace.work" class="logo">
+            <img src="/Samespace-Logo-RGB-DarkGreen.png" alt="Samespace">
+        </a>
+    </header>
+
+    <main>
+        <!-- Screen 1: Choose booking type -->
+        <section id="screen-choose" class="screen active">
+            <h1>Book at Samespace</h1>
+            <p class="subtitle">Flexible coworking in Hexham</p>
+            <div class="card-grid">
+                <button class="booking-card" onclick="app.selectType('desk')">
+                    <span class="card-icon">&#9998;</span>
+                    <h2>Day Pass</h2>
+                    <p class="card-price">From &pound;13/day</p>
+                    <p class="card-desc">Hot desk in our open-plan workspace. 8am&ndash;6pm weekdays.</p>
+                </button>
+                <button class="booking-card" onclick="app.selectType('room')">
+                    <span class="card-icon">&#9743;</span>
+                    <h2>Meeting Room</h2>
+                    <p class="card-price">From &pound;5/hour</p>
+                    <p class="card-desc">Soundproofed rooms for meetings or video calls.</p>
+                </button>
+            </div>
+        </section>
+
+        <!-- Screen 2a: Desk date selection -->
+        <section id="screen-desk" class="screen">
+            <button class="back-btn" onclick="app.goTo('screen-choose')">&larr; Back</button>
+            <h1>Choose your dates</h1>
+            <p class="subtitle">Click dates to select. Bulk pricing applied automatically.</p>
+            <div class="calendar-nav">
+                <button onclick="app.prevMonth()">&larr;</button>
+                <span id="calendar-month-label"></span>
+                <button onclick="app.nextMonth()">&rarr;</button>
+            </div>
+            <div id="calendar" class="calendar"></div>
+            <div id="desk-selection-summary" class="selection-summary hidden">
+                <div id="desk-dates-list"></div>
+                <div id="desk-price-breakdown"></div>
+                <div class="summary-total">Total: <strong id="desk-total">&pound;0</strong></div>
+                <button class="btn-primary" onclick="app.goTo('screen-account')">Continue</button>
+            </div>
+        </section>
+
+        <!-- Screen 2b: Room selection -->
+        <section id="screen-room" class="screen">
+            <button class="back-btn" onclick="app.goTo('screen-choose')">&larr; Back</button>
+            <h1>Book a room</h1>
+
+            <div class="room-type-select">
+                <button class="room-card" onclick="app.selectRoom('zoom')" id="room-zoom">
+                    <h3>Zoom Room</h3>
+                    <p>Single-person, ideal for video calls</p>
+                </button>
+                <button class="room-card" onclick="app.selectRoom('meeting')" id="room-meeting">
+                    <h3>Meeting Room</h3>
+                    <p>Up to 4 people</p>
+                </button>
+            </div>
+
+            <div id="room-date-section" class="hidden">
+                <label for="room-date">Date:</label>
+                <input type="date" id="room-date" onchange="app.loadAvailability()">
+            </div>
+
+            <div id="room-slots" class="hidden">
+                <p class="subtitle">Select your time slots:</p>
+                <div id="slot-grid" class="slot-grid"></div>
+            </div>
+
+            <div id="room-selection-summary" class="selection-summary hidden">
+                <div id="room-summary-text"></div>
+                <div class="summary-total">Total: <strong id="room-total">&pound;0</strong></div>
+                <button class="btn-primary" onclick="app.goTo('screen-account')">Continue</button>
+            </div>
+        </section>
+
+        <!-- Screen 3: Account (new or existing) -->
+        <section id="screen-account" class="screen">
+            <button class="back-btn" onclick="app.goBack()">&larr; Back</button>
+            <h1>Your details</h1>
+
+            <div class="account-tabs">
+                <button class="tab active" onclick="app.switchTab('new')" id="tab-new">I'm new</button>
+                <button class="tab" onclick="app.switchTab('existing')" id="tab-existing">I have an account</button>
+            </div>
+
+            <div id="form-new" class="account-form">
+                <div class="form-group">
+                    <label for="new-name">Full name</label>
+                    <input type="text" id="new-name" placeholder="Jane Smith" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-email">Email</label>
+                    <input type="email" id="new-email" placeholder="jane@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-phone">Phone (optional)</label>
+                    <input type="tel" id="new-phone" placeholder="07...">
+                </div>
+                <div class="form-group checkbox">
+                    <input type="checkbox" id="new-terms">
+                    <label for="new-terms">I accept the <a href="https://samespace.work/terms" target="_blank">terms &amp; conditions</a></label>
+                </div>
+                <button class="btn-primary" onclick="app.continueAsNew()">Continue to payment</button>
+            </div>
+
+            <div id="form-existing" class="account-form hidden">
+                <div class="form-group">
+                    <label for="ex-email">Email</label>
+                    <input type="email" id="ex-email" placeholder="jane@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="ex-password">Password</label>
+                    <input type="password" id="ex-password" required>
+                </div>
+                <button class="btn-primary" onclick="app.loginExisting()">Log in</button>
+                <div id="login-error" class="error hidden"></div>
+            </div>
+
+            <div id="logged-in-info" class="hidden">
+                <div class="logged-in-card">
+                    <p>Welcome back, <strong id="logged-in-name"></strong></p>
+                    <p id="passes-info" class="hidden">You have <strong id="pass-count"></strong> unused day pass(es)</p>
+                </div>
+                <div id="updated-price" class="selection-summary"></div>
+                <button class="btn-primary" id="btn-pay" onclick="app.proceedToPayment()">Continue to payment</button>
+            </div>
+        </section>
+
+        <!-- Screen 4: Processing / redirecting -->
+        <section id="screen-processing" class="screen">
+            <div class="processing">
+                <div class="spinner"></div>
+                <p>Setting up your booking...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Samespace Coworking &middot; 4 Hencotes, Hexham NE46 2EJ &middot; <a href="https://samespace.work">samespace.work</a></p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

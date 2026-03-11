@@ -272,6 +272,94 @@ class NexudusSession {
 		return $bookingRef;
 	}
 
+	// Authenticate a coworker via the Nexudus bearer token endpoint
+	public function authenticateCoworker($email, $password) {
+		$url = $this->apiBase . 'token';
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, [
+			'Content-Type: application/x-www-form-urlencoded',
+		]);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+			'grant_type' => 'password',
+			'username' => $email,
+			'password' => $password,
+		]));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$response = curl_exec($ch);
+		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		curl_close($ch);
+
+		if ($httpCode !== 200) {
+			return null;
+		}
+		return json_decode($response, true);
+	}
+
+	// Get a coworker's unused time passes
+	public function getUnusedPasses($coworkerId) {
+		return $this->request(
+			'billing/coworkertimepasses?size=1000'
+			. '&CoworkerTimePass_Coworker=' . $coworkerId
+			. '&CoworkerTimePass_IsUsed=false'
+			. '&CoworkerTimePass_CancelDate=null'
+		)["Records"] ?? [];
+	}
+
+	// Check if a coworker has an active tariff/plan matching a given name
+	public function hasActivePlan($coworkerId, $planName) {
+		$contracts = $this->request(
+			'billing/coworkercontracts?CoworkerContract_Coworker=' . $coworkerId
+			. '&CoworkerContract_Active=true'
+		)["Records"] ?? [];
+
+		foreach ($contracts as $contract) {
+			if (stripos($contract['TariffName'] ?? '', $planName) !== false) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Get resource availability for a given date
+	public function getResourceAvailability($resourceId, $date) {
+		// date should be 'YYYY-MM-DD'
+		$fromTime = $date . 'T08:00:00Z';
+		$toTime = $date . 'T18:00:00Z';
+		return $this->request(
+			"spaces/bookings?Booking_Resource=$resourceId"
+			. "&from_Booking_FromTime=$fromTime"
+			. "&to_Booking_ToTime=$toTime"
+		)["Records"] ?? [];
+	}
+
+	// Create an hourly booking for a room
+	public function bookResourceHours($resourceId, $coworkerId, $date, $startHour, $endHour) {
+		$fromTime = sprintf('%sT%02d:00:00Z', $date, $startHour);
+		$toTime = sprintf('%sT%02d:00:00Z', $date, $endHour);
+
+		$data = [
+			'CoworkerId' => $coworkerId,
+			'ResourceId' => $resourceId,
+			'FromTime' => $fromTime,
+			'ToTime' => $toTime,
+		];
+		return $this->request('spaces/bookings', 'POST', $data);
+	}
+
+	// Check if a coworker has a checkin for a given date
+	public function hasCheckinForDate($coworkerId, $date) {
+		$fromTime = $date . 'T00:00:00Z';
+		$toTime = $date . 'T23:59:59Z';
+		$checkins = $this->request(
+			"spaces/checkins?Checkin_Coworker=$coworkerId"
+			. "&from_Checkin_FromTime=$fromTime"
+			. "&to_Checkin_ToTime=$toTime"
+		)["Records"] ?? [];
+		return count($checkins) > 0;
+	}
+
 	public function getCurrentCheckins($fromDateTime = null) {
 		// Set default value for $fromDateTime to midnight today if not provided
 		if ($fromDateTime === null) {

@@ -132,7 +132,7 @@ foreach ($lineItems as $item) {
     }
 }
 
-$baseUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
+$baseUrl = 'https://book.samespace.work';
 $successUrl = $baseUrl . '/confirmation.html?intent=' . $intentId;
 $cancelUrl = $baseUrl . '/';
 
